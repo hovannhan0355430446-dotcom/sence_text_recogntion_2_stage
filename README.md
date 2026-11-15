@@ -43,7 +43,7 @@ Mở [http://127.0.0.1:8000](http://127.0.0.1:8000). Nhấn `Ctrl+C` trong termi
 - `img_real_life\`: ảnh mẫu dùng trong giao diện.
 - `notebook\`: notebook huấn luyện.
 
-Dataset, trọng số mô hình, từ điển benchmark và các kết quả benchmark sinh ra không được lưu trong Git. Benchmark cần dataset VinText và một tệp từ điển được cung cấp riêng.
+Dataset, trọng số mô hình, từ điển benchmark và báo cáo/biểu đồ chi tiết không được lưu trong Git. Repository chỉ lưu bản tóm tắt chỉ số để hiển thị trên web. Benchmark cần dataset VinText và một tệp từ điển được cung cấp riêng.
 
 ## Chạy benchmark
 
