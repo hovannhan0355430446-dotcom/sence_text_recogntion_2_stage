@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scene Text Recognition</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <h1>Nhận Diện Chữ Tiếng Việt Trong Ảnh Tự Nhiên</h1>
+            <p>Quy trình hai giai đoạn: DBNet++ (Phát hiện vùng chữ) và PARSeq (Nhận dạng ký tự)</p>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <section class="panel input-panel">
+            <h2>Tải ảnh lên</h2>
+            
+            <div class="dropzone" id="dropzone">
+                <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" hidden>
+                <div class="dropzone-content">
+                    <p class="dropzone-title">Kéo và thả ảnh vào đây</p>
+                    <p class="dropzone-sub">hoặc</p>
+                    <button type="button" class="btn btn-secondary" id="browseBtn">Chọn ảnh từ thiết bị</button>
+                    <p class="dropzone-hint">Hỗ trợ định dạng: JPG, PNG, WEBP</p>
+                </div>
+            </div>
+
+            <div class="sample-section">
+                <label class="section-label">Ảnh mẫu có sẵn:</label>
+                <div class="sample-list" id="sampleList"></div>
+            </div>
+
+            <div class="settings-section">
+                <label class="section-label">Tham số suy luận:</label>
+                <div class="param-grid">
+                    <div class="param-item">
+                        <label for="thresh">Binarize Threshold:</label>
+                        <input type="number" id="thresh" value="0.3" min="0.1" max="0.9" step="0.05">
+                    </div>
+                    <div class="param-item">
+                        <label for="boxThresh">Box Threshold:</label>
+                        <input type="number" id="boxThresh" value="0.5" min="0.1" max="0.9" step="0.05">
+                    </div>
+                    <div class="param-item">
+                        <label for="unclipRatio">Unclip Ratio:</label>
+                        <input type="number" id="unclipRatio" value="1.7" min="1.0" max="3.0" step="0.1">
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-primary" id="runBtn" disabled>Bắt đầu xử lý</button>
+            <div class="loading" id="loadingIndicator">
+                <div class="spinner"></div>
+                <span>Đang xử lý mô hình, vui lòng chờ...</span>
+            </div>
+        </section>
+
+        <section class="panel output-panel">
+            <h2>Kết quả nhận diện</h2>
+
+            <div class="stats-bar" id="statsBar">
+                <div class="stat-card">
+                    <span class="stat-label">Số vùng chữ</span>
+                    <span class="stat-value" id="statCount">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Detection</span>
+                    <span class="stat-value" id="statDetTime">0.00s</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Recognition</span>
+                    <span class="stat-value" id="statRecTime">0.00s</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Tổng thời gian</span>
+                    <span class="stat-value" id="statTotalTime">0.00s</span>
+                </div>
+            </div>
+
+            <div class="viewer-container" id="viewerContainer">
+                <div class="viewer-tabs">
+                    <button class="tab-btn active" data-tab="annotated">Ảnh trực quan</button>
+                    <button class="tab-btn" data-tab="original">Ảnh gốc</button>
+                </div>
+                <div class="image-wrapper">
+                    <img id="resultImage" alt="Kết quả nhận diện">
+                    <canvas id="overlayCanvas"></canvas>
+                </div>
+            </div>
+
+            <div class="text-section">
+                <div class="text-header">
+                    <label class="section-label">Toàn bộ văn bản (theo thứ tự đọc):</label>
+                    <button type="button" class="btn btn-secondary btn-sm" id="copyBtn">Sao chép văn bản</button>
+                </div>
+                <textarea id="fullTextArea" readonly rows="3" placeholder="Văn bản nhận diện sẽ hiển thị tại đây..."></textarea>
+            </div>
+
+            <div class="table-section">
+                <label class="section-label">Chi tiết từng vùng phát hiện:</label>
+                <div class="table-wrapper">
+                    <table class="result-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">STT</th>
+                                <th style="width: 120px;">Ảnh cắt</th>
+                                <th>Văn bản nhận dạng</th>
+                                <th style="width: 100px;">Det Conf</th>
+                                <th style="width: 100px;">Rec Conf</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultTableBody">
+                            <tr>
+                                <td colspan="5" class="empty-cell">Chưa có dữ liệu xử lý</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="/static/js/script.js"></script>
+</body>
+</html>
+
