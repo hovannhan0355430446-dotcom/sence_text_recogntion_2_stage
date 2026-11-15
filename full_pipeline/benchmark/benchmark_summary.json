@@ -1,0 +1,65 @@
+{
+  "generated_at": "2026-11-15T20:31:52+07:00",
+  "dataset": "VinText Official Test",
+  "image_count": 300,
+  "expected_image_count": 300,
+  "detection": {
+    "precision": 79.89339650577436,
+    "recall": 74.73684210526315,
+    "hmean": 77.22913983111494,
+    "tp": 5396,
+    "fp": 1358,
+    "fn": 1824
+  },
+  "recognition_on_ground_truth": {
+    "word_acc_cs": 82.61772853185596,
+    "word_acc_ci": 83.82271468144044,
+    "one_ned": 90.45005894646495,
+    "cer": 9.58306941391259,
+    "word_count": 7220
+  },
+  "end_to_end": {
+    "none": {
+      "cs": {
+        "precision": 67.93011548711874,
+        "recall": 63.54570637119114,
+        "hmean": 65.66480606841277,
+        "tp": 4588,
+        "fp": 2166,
+        "fn": 2632
+      },
+      "ci": {
+        "precision": 68.68522357121705,
+        "recall": 64.25207756232687,
+        "hmean": 66.39473307571204,
+        "tp": 4639,
+        "fp": 2115,
+        "fn": 2581
+      }
+    },
+    "full_lexicon": {
+      "cs": {
+        "precision": 67.66360675155464,
+        "recall": 63.29639889196675,
+        "hmean": 65.4071847717189,
+        "tp": 4570,
+        "fp": 2184,
+        "fn": 2650
+      },
+      "ci": {
+        "precision": 68.38910275392361,
+        "recall": 63.97506925207757,
+        "hmean": 66.10848719049665,
+        "tp": 4619,
+        "fp": 2135,
+        "fn": 2601
+      }
+    }
+  },
+  "speed": {
+    "mean_latency_ms_per_image": 634.0113796666265,
+    "fps": 1.5772587560270863,
+    "timed_images": 300,
+    "scope": "pipeline.run; không bao gồm crop recognition độc lập và vẽ biểu đồ"
+  }
+}

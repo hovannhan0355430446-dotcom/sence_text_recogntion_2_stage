@@ -20,6 +20,9 @@ const overlayCanvas = document.getElementById("overlayCanvas");
 const fullTextArea = document.getElementById("fullTextArea");
 const copyBtn = document.getElementById("copyBtn");
 const resultTableBody = document.getElementById("resultTableBody");
+const benchmarkStatus = document.getElementById("benchmarkStatus");
+const benchmarkGrid = document.getElementById("benchmarkGrid");
+const benchmarkUpdated = document.getElementById("benchmarkUpdated");
 
 browseBtn.addEventListener("click", () => fileInput.click());
 
@@ -226,6 +229,79 @@ function clearHighlight() {
     ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
 }
 
+function formatBenchmarkPercent(value, label) {
+    if (!Number.isFinite(value)) {
+        throw new Error(`Chỉ số ${label} không hợp lệ.`);
+    }
+    return `${value.toFixed(2)}%`;
+}
+
+function formatBenchmarkNumber(value, label, suffix) {
+    if (!Number.isFinite(value)) {
+        throw new Error(`Chỉ số ${label} không hợp lệ.`);
+    }
+    return `${value.toFixed(2)} ${suffix}`;
+}
+
+async function loadBenchmark() {
+    try {
+        const response = await fetch("/api/benchmark");
+        if (!response.ok) {
+            throw new Error(`Máy chủ trả về HTTP ${response.status}.`);
+        }
+
+        const report = await response.json();
+        const updatedAt = new Date(report.generated_at);
+        const values = [
+            report.detection?.hmean,
+            report.detection?.precision,
+            report.detection?.recall,
+            report.recognition_on_ground_truth?.word_acc_ci,
+            report.recognition_on_ground_truth?.one_ned,
+            report.recognition_on_ground_truth?.cer,
+            report.end_to_end?.none?.ci?.hmean,
+            report.end_to_end?.full_lexicon?.ci?.hmean,
+            report.speed?.fps,
+            report.speed?.mean_latency_ms_per_image,
+            report.image_count,
+            report.expected_image_count,
+        ];
+        if (!Number.isFinite(updatedAt.getTime()) || !values.every(Number.isFinite)) {
+            throw new Error("Báo cáo benchmark thiếu dữ liệu hợp lệ.");
+        }
+
+        document.getElementById("benchmarkDetHmean").textContent =
+            formatBenchmarkPercent(report.detection.hmean, "Detection H-Mean");
+        document.getElementById("benchmarkDetPrecision").textContent =
+            formatBenchmarkPercent(report.detection.precision, "Detection Precision");
+        document.getElementById("benchmarkDetRecall").textContent =
+            formatBenchmarkPercent(report.detection.recall, "Detection Recall");
+        document.getElementById("benchmarkRecAccuracy").textContent =
+            formatBenchmarkPercent(report.recognition_on_ground_truth.word_acc_ci, "Recognition Word Accuracy");
+        document.getElementById("benchmarkRecNed").textContent =
+            formatBenchmarkPercent(report.recognition_on_ground_truth.one_ned, "Recognition 1 - NED");
+        document.getElementById("benchmarkRecCer").textContent =
+            formatBenchmarkPercent(report.recognition_on_ground_truth.cer, "Recognition CER");
+        document.getElementById("benchmarkE2e").textContent =
+            formatBenchmarkPercent(report.end_to_end.none.ci.hmean, "End-to-End H-Mean");
+        document.getElementById("benchmarkLexicon").textContent =
+            formatBenchmarkPercent(report.end_to_end.full_lexicon.ci.hmean, "Full Lexicon H-Mean");
+        document.getElementById("benchmarkFps").textContent =
+            formatBenchmarkNumber(report.speed.fps, "FPS", "FPS");
+        document.getElementById("benchmarkLatency").textContent =
+            formatBenchmarkNumber(report.speed.mean_latency_ms_per_image, "độ trễ", "ms/ảnh");
+        document.getElementById("benchmarkImages").textContent =
+            `${report.image_count}/${report.expected_image_count}`;
+
+        benchmarkUpdated.textContent = `Cập nhật: ${updatedAt.toLocaleString("vi-VN")}`;
+        benchmarkStatus.textContent = `${report.dataset} · ${report.image_count} ảnh`;
+        benchmarkGrid.hidden = false;
+    } catch (error) {
+        benchmarkGrid.hidden = true;
+        benchmarkStatus.textContent = `Không thể tải benchmark: ${error.message}`;
+    }
+}
+
 copyBtn.addEventListener("click", () => {
     if (!fullTextArea.value) return;
     navigator.clipboard.writeText(fullTextArea.value).then(() => {
@@ -239,5 +315,6 @@ copyBtn.addEventListener("click", () => {
 
 window.addEventListener("DOMContentLoaded", () => {
     loadSamples();
+    loadBenchmark();
 });
 

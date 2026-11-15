@@ -1,4 +1,5 @@
 import io
+import json
 from pathlib import Path
 import cv2
 import numpy as np
@@ -19,6 +20,7 @@ app = FastAPI(title="Scene Text Recognition Pipeline")
 
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
+BENCHMARK_SUMMARY_PATH = BASE_DIR / "benchmark" / "benchmark_summary.json"
 
 pipeline = None
 
@@ -35,6 +37,22 @@ def startup_event():
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
+
+
+@app.get("/api/benchmark")
+async def get_benchmark():
+    if not BENCHMARK_SUMMARY_PATH.is_file():
+        raise HTTPException(
+            status_code=404,
+            detail="Chưa có báo cáo benchmark. Hãy chạy full_pipeline\\benchmark\\benchmark.py.",
+        )
+    try:
+        return json.loads(BENCHMARK_SUMMARY_PATH.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise HTTPException(status_code=500, detail="Báo cáo benchmark không hợp lệ.") from exc
+    except OSError as exc:
+        raise HTTPException(status_code=500, detail="Không thể đọc báo cáo benchmark.") from exc
+
 
 @app.get("/api/samples")
 async def get_samples():

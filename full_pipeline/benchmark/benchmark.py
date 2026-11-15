@@ -1,9 +1,11 @@
 import argparse
 import json
 import re
+import sys
 import time
 import unicodedata
 from collections import defaultdict
+from datetime import datetime
 from pathlib import Path
 
 import cv2
@@ -14,6 +16,8 @@ import numpy as np
 from matplotlib.font_manager import FontProperties
 from PIL import Image, ImageDraw, ImageFont
 from shapely.geometry import Polygon
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from pipeline import SceneTextPipeline
 
@@ -626,6 +630,28 @@ def print_metrics_table(detection, recognition, e2e_none, e2e_lexicon, latency_m
     print(f"Tốc độ trung bình:   {latency_ms:.2f} ms/ảnh ({fps:.2f} FPS)")
 
 
+def build_dashboard_summary(report):
+    return {
+        "generated_at": datetime.now().astimezone().isoformat(timespec="seconds"),
+        "dataset": report["protocol"]["dataset"],
+        "image_count": report["protocol"]["image_count"],
+        "expected_image_count": report["protocol"]["expected_image_count"],
+        "detection": report["detection"],
+        "recognition_on_ground_truth": report["recognition_on_ground_truth"],
+        "end_to_end": report["end_to_end"],
+        "speed": report["speed"],
+    }
+
+
+def write_dashboard_summary(report):
+    summary_path = Path(__file__).resolve().parent / "benchmark_summary.json"
+    summary_path.write_text(
+        json.dumps(build_dashboard_summary(report), ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return summary_path
+
+
 def run_benchmark(dataset_path, lexicon_path, output_dir):
     dataset_root = Path(dataset_path)
     if (dataset_root / "vietnamese").is_dir():
@@ -773,14 +799,21 @@ def run_benchmark(dataset_path, lexicon_path, output_dir):
     }
     report_path = output_dir / "benchmark_results.json"
     report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    summary_path = write_dashboard_summary(report)
     print(f"Đã lưu báo cáo: {report_path}")
+    print(f"Đã cập nhật dữ liệu benchmark cho web: {summary_path}")
     print(f"Đã lưu biểu đồ hiệu năng: {metrics_path}")
     print(f"Đã lưu lưới trực quan: {qualitative_path}")
 
 
 def main():
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8")
+
     script_dir = Path(__file__).resolve().parent
-    project_dir = script_dir.parent
+    pipeline_dir = script_dir.parent
+    project_dir = pipeline_dir.parent
     parser = argparse.ArgumentParser(description="Đánh giá DBNet++ và PARSeq trên tập kiểm thử VinText chính thức")
     parser.add_argument(
         "--dataset",
@@ -789,7 +822,7 @@ def main():
     )
     parser.add_argument(
         "--lexicon",
-        default=str(script_dir / "vn_dictionary.txt"),
+        default=str(pipeline_dir / "vn_dictionary.txt"),
         help="Tệp từ điển tiếng Việt UTF-8, mỗi từ một dòng",
     )
     parser.add_argument("--output", default=".", help="Thư mục lưu JSON và biểu đồ")

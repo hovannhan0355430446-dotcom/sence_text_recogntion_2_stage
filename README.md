@@ -45,6 +45,16 @@ Mở [http://127.0.0.1:8000](http://127.0.0.1:8000). Nhấn `Ctrl+C` trong termi
 
 Dataset, trọng số mô hình, từ điển benchmark và các kết quả benchmark sinh ra không được lưu trong Git. Benchmark cần dataset VinText và một tệp từ điển được cung cấp riêng.
 
+## Chạy benchmark
+
+Từ thư mục gốc dự án, sau khi đặt dataset tại `dataset\vintext_official\vietnamese` và từ điển tại `full_pipeline\vn_dictionary.txt`, chạy:
+
+```powershell
+python full_pipeline\benchmark\benchmark.py
+```
+
+Benchmark lưu kết quả đầy đủ vào thư mục output và cập nhật `full_pipeline\benchmark\benchmark_summary.json`, dữ liệu được hiển thị trong trang web. Có thể chỉ định đường dẫn khác bằng `--dataset`, `--lexicon` và `--output`.
+
 ## Chia sẻ và giấy phép
 
 Mã nguồn được công khai trên GitHub; các trọng số được chia sẻ riêng qua Google Drive. Hãy xác nhận quyền chia sẻ ảnh mẫu, trọng số và các tài nguyên bên ngoài trước khi sử dụng hoặc phân phối lại. Repository chưa kèm giấy phép sử dụng mã nguồn.

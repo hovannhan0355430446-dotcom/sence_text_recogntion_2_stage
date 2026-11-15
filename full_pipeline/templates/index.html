@@ -121,6 +121,62 @@
                 </div>
             </div>
         </section>
+
+        <section class="panel benchmark-panel" aria-labelledby="benchmarkTitle">
+            <div class="benchmark-heading">
+                <div>
+                    <h2 id="benchmarkTitle">Benchmark trên VinText</h2>
+                    <p class="benchmark-description">Kết quả lần chạy gần nhất: Detection-only, Recognition trên Ground Truth và End-to-End. Chạy benchmark.py để cập nhật.</p>
+                </div>
+                <span class="benchmark-updated" id="benchmarkUpdated"></span>
+            </div>
+            <p class="benchmark-status" id="benchmarkStatus" role="status">Đang tải kết quả benchmark...</p>
+            <div class="benchmark-grid" id="benchmarkGrid" hidden>
+                <article class="benchmark-card">
+                    <h3>Detection-only</h3>
+                    <div class="benchmark-highlight">
+                        <span>H-Mean</span>
+                        <strong id="benchmarkDetHmean">--</strong>
+                    </div>
+                    <dl>
+                        <div><dt>Precision</dt><dd id="benchmarkDetPrecision">--</dd></div>
+                        <div><dt>Recall</dt><dd id="benchmarkDetRecall">--</dd></div>
+                    </dl>
+                </article>
+                <article class="benchmark-card">
+                    <h3>Recognition trên Ground Truth</h3>
+                    <div class="benchmark-highlight">
+                        <span>Word Accuracy (CI)</span>
+                        <strong id="benchmarkRecAccuracy">--</strong>
+                    </div>
+                    <dl>
+                        <div><dt>1 - NED</dt><dd id="benchmarkRecNed">--</dd></div>
+                        <div><dt>CER</dt><dd id="benchmarkRecCer">--</dd></div>
+                    </dl>
+                </article>
+                <article class="benchmark-card">
+                    <h3>End-to-End (CI)</h3>
+                    <div class="benchmark-highlight">
+                        <span>Không từ điển</span>
+                        <strong id="benchmarkE2e">--</strong>
+                    </div>
+                    <dl>
+                        <div><dt>Full Lexicon H-Mean</dt><dd id="benchmarkLexicon">--</dd></div>
+                    </dl>
+                </article>
+                <article class="benchmark-card">
+                    <h3>Tốc độ</h3>
+                    <div class="benchmark-highlight">
+                        <span>Pipeline</span>
+                        <strong id="benchmarkFps">--</strong>
+                    </div>
+                    <dl>
+                        <div><dt>Độ trễ trung bình</dt><dd id="benchmarkLatency">--</dd></div>
+                        <div><dt>Số ảnh đánh giá</dt><dd id="benchmarkImages">--</dd></div>
+                    </dl>
+                </article>
+            </div>
+        </section>
     </main>
 
     <script src="/static/js/script.js"></script>
